@@ -21,10 +21,10 @@ Step 7: Finally Free device global memory,host memory and reset device.
 Step 8: Save and Run the Program.
 
 ### Program: 
-~
-Developed By: G Venkata Pavan Kumar
-Reg No.: 212221240013
-~
+~~~
+Developed By:D.Amarnath Reddy
+Reg No.: 212221240012
+~~~~
 ```
 #include "common.h"
 #include <cuda_runtime.h>
@@ -197,7 +197,7 @@ int main(int argc, char **argv)
 }
 ```
 ## Output:
-~
+~~~
 (base) student@SAV-MLSystem:~$ nvcc sumMatrixOnGPU-2D-grid-2D-block.cu 
 (base) student@SAV-MLSystem:~$ ./a.out
 ./a.out Starting...
@@ -206,6 +206,6 @@ Matrix size: nx 16384 ny 16384
 Matrix initialization elapsed 6.508808 sec
 sumMatrixOnHost elapsed 0.542826 sec
 Error: sumMatrixOnGPU-2D-grid-2D-block.cu:126, code: 2, reason: out of memory
-~
+~~~
 ## Result:
 Thus the program to perform PCA matrix summation with a 2D grid and 2D blocks and adapting it to integer matrix addition has been successfully executed.
