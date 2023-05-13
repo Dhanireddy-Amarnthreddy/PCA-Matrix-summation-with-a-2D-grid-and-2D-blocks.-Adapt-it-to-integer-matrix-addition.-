@@ -25,7 +25,7 @@ Step 8: Save and Run the Program.
 Developed By: G Venkata Pavan Kumar
 Reg No.: 212221240013
 ~
-~
+```
 #include "common.h"
 #include <cuda_runtime.h>
 #include <stdio.h>
@@ -195,7 +195,7 @@ int main(int argc, char **argv)
 
     return (0);
 }
-~
+```
 ## Output:
 ~
 (base) student@SAV-MLSystem:~$ nvcc sumMatrixOnGPU-2D-grid-2D-block.cu 
