@@ -22,8 +22,8 @@ Step 8: Save and Run the Program.
 
 ### Program: 
 ~
-Developed By: D.Amarnath Reddy
-Reg No.: 212221240012
+Developed By: G Venkata Pavan Kumar
+Reg No.: 212221240013
 ~
 ~
 #include "common.h"
@@ -143,8 +143,69 @@ int main(int argc, char **argv)
 
     // add matrix at host side for result checks
     iStart = seconds();
-    sumMatrixOnHost(h_A, h_B, host…
-    Error: sumMatrixOnGPU-2D-grid-2D-block.cu:126, code: 2, reason: out of memory
+    sumMatrixOnHost(h_A, h_B, hostRef, nx, ny);
+    iElaps = seconds() - iStart;
+    printf("sumMatrixOnHost elapsed %f sec\n", iElaps);
+
+    // malloc device global memory
+    int *d_MatA, *d_MatB, *d_MatC;
+    CHECK(cudaMalloc((void **)&d_MatA, nBytes));
+    CHECK(cudaMalloc((void **)&d_MatB, nBytes));
+    CHECK(cudaMalloc((void **)&d_MatC, nBytes));
+
+    // transfer data from host to device
+    CHECK(cudaMemcpy(d_MatA, h_A, nBytes, cudaMemcpyHostToDevice));
+    CHECK(cudaMemcpy(d_MatB, h_B, nBytes, cudaMemcpyHostToDevice));
+
+    // invoke kernel at host side
+    int dimx = 32;
+    int dimy = 32;
+    dim3 block(dimx, dimy);
+    dim3 grid((nx + block.x - 1) / block.x, (ny + block.y - 1) / block.y);
+
+    iStart = seconds();
+    sumMatrixOnGPU2D<<<grid, block>>>(d_MatA, d_MatB, d_MatC, nx, ny);
+    CHECK(cudaDeviceSynchronize());
+    iElaps = seconds() - iStart;
+    printf("sumMatrixOnGPU2D <<<(%d,%d), (%d,%d)>>> elapsed %f sec\n", grid.x,
+           grid.y,
+           block.x, block.y, iElaps);
+    // check kernel error
+    CHECK(cudaGetLastError());
+
+    // copy kernel result back to host side
+    CHECK(cudaMemcpy(gpuRef, d_MatC, nBytes, cudaMemcpyDeviceToHost));
+
+    // check device results
+    checkResult(hostRef, gpuRef, nxy);
+
+    // free device global memory
+    CHECK(cudaFree(d_MatA));
+    CHECK(cudaFree(d_MatB));
+    CHECK(cudaFree(d_MatC));
+
+    // free host memory
+    free(h_A);
+    free(h_B);
+    free(hostRef);
+    free(gpuRef);
+
+    // reset device
+    CHECK(cudaDeviceReset());
+
+    return (0);
+}
+~
+## Output:
+~
+(base) student@SAV-MLSystem:~$ nvcc sumMatrixOnGPU-2D-grid-2D-block.cu 
+(base) student@SAV-MLSystem:~$ ./a.out
+./a.out Starting...
+Using Device 0: NVIDIA GeForce GT 710
+Matrix size: nx 16384 ny 16384
+Matrix initialization elapsed 6.508808 sec
+sumMatrixOnHost elapsed 0.542826 sec
+Error: sumMatrixOnGPU-2D-grid-2D-block.cu:126, code: 2, reason: out of memory
 ~
 ## Result:
 Thus the program to perform PCA matrix summation with a 2D grid and 2D blocks and adapting it to integer matrix addition has been successfully executed.
